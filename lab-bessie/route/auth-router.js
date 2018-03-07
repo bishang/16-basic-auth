@@ -8,7 +8,7 @@ const User = require('../model/user.js');
 
 const authRouter = module.exports = Router();
 
-authRouter.post('/api/signup', jsonParser, function(req, res, next) {
+authRouter.post('/api/signup', jsonParser, function (req, res, next) {
   debug('POST: /api/signup');
 
   let password = req.body.password;
@@ -16,18 +16,18 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 
   let user = new User(req.body);
   user.generatePasswordHash(password)
-  .then( user => user.save())
-  .then( user => user.generateToken())
-  .then( token => res.send(token))
-  .catch(next);
+    .then(user => user.save())
+    .then(user => user.generateToken())
+    .then(token => res.send(token))
+    .catch(next);
 });
 
-authRouter.get('/api/signin', basicAuth, function(req, res, next) {
+authRouter.get('/api/signin', basicAuth, function (req, res, next) {
   debug('GET: /api/signin');
 
   User.findOne({ username: req.auth.username })
-  .then( user => user.comparePasswordHash(req.auth.password))
-  .then( user => user.generateToken())
-  .then( token => res.send(token))
-  .catch(next);
+    .then(user => user.comparePasswordHash(req.auth.password))
+    .then(user => user.generateToken())
+    .then(token => res.send(token))
+    .catch(next);
 });

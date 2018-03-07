@@ -7,7 +7,7 @@ const gallerySchema = Schema({
   name: { type: String, required: true },
   desc: { type: String, required: true },
   created: { type: Date, required: true, default: Date.now },
-  user: { type: Schema.Types.ObjectId, required: true }
+  userID: { type: Schema.Types.ObjectId, required: true },
 });
 
 module.exports = mongoose.model('gallery', gallerySchema);

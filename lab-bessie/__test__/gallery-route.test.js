@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('superagent');
-const mongoose = require('mongoose');
 const server = require('../server.js');
 const serverToggle = require('../lib/server-toggle.js');
 
@@ -15,15 +14,15 @@ const url = 'http://localhost:3000';
 const exampleUser = {
   username: 'exampleuser',
   password: '1234',
-  email: 'example@example.com'
+  email: 'exampleuser@test.com',
 };
 
 const exampleGallery = {
   name: 'test gallery',
-  desc: 'test gallery description'
+  desc: 'test gallery description',
 };
 
-describe('Gallery Routes', function() {
+describe('Gallery Routes', function () {
   beforeAll(done => {
     serverToggle.serverOn(server, done);
   });
@@ -35,11 +34,11 @@ describe('Gallery Routes', function() {
   afterEach(done => {
     Promise.all([
       User.remove({}),
-      Gallery.remove({})
+      Gallery.remove({}),
     ])
       .then(() => done())
       .catch(done);
-  })
+  });
 
   describe('POST: /api/gallery', () => {
     beforeEach(done => {
@@ -48,7 +47,7 @@ describe('Gallery Routes', function() {
         .then(user => user.save())
         .then(user => {
           this.tempUser = user;
-          return User.generateToken()
+          return user.generateToken();
         })
         .then(token => {
           this.tempToken = token;
@@ -56,14 +55,15 @@ describe('Gallery Routes', function() {
         })
         .catch(done);
     });
+
     it('should return a gallery', done => {
       request.post(`${url}/api/gallery`)
         .send(exampleGallery)
         .set({
-          Authorization: `Bearer ${this.tempToken}`
+          Authorization: `Bearer ${this.tempToken}`,
         })
         .end((err, res) => {
-          if(err) return done(err);
+          if (err) return done(err);
           expect(res.status).toEqual(200);
           expect(res.body.desc).toEqual(exampleGallery.desc);
           expect(res.body.name).toEqual(exampleGallery.name);
@@ -92,7 +92,7 @@ describe('Gallery Routes', function() {
       exampleGallery.userID = this.tempUser._id.toString();
       new Gallery(exampleGallery).save()
         .then(gallery => {
-          this.tempGallery =gallery;
+          this.tempGallery = gallery;
           done();
         })
         .catch(done);
@@ -105,10 +105,10 @@ describe('Gallery Routes', function() {
     it('should return a gallery', done => {
       request.get(`${url}/api/gallery/${this.tempGallery._id}`)
         .set({
-          Authorization: `Bearer ${this.tempToken}`
+          Authorization: `Bearer ${this.tempToken}`,
         })
         .end((err, res) => {
-          if(err) return done(err);
+          if (err) return done(err);
           expect(res.status).toEqual(200);
           expect(res.body.name).toEqual(exampleGallery.name);
           expect(res.body.desc).toEqual(exampleGallery.desc);
