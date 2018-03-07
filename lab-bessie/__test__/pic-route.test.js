@@ -13,7 +13,7 @@ require('jest');
 const url = 'http://localhost:3000';
 
 const exampleUser = {
-  username: 'exampleUser',
+  username: 'exampleuser',
   password: '1234',
   email: 'exampleuser@test.com',
 };
@@ -25,11 +25,11 @@ const exampleGallery = {
 
 const examplePic = {
   name: 'example pic',
-  desc: 'example pic desc',
-  image: `${__dirname}/../data/tester.jpeg`,
+  desc: 'example pic description',
+  image: `${__dirname}/../data/tester.png`,
 };
 
-describe('Pic Routes', function() {
+describe('Pic Routes', function () {
   beforeAll(done => {
     serverToggle.serverOn(server, done);
   });
@@ -48,8 +48,8 @@ describe('Pic Routes', function() {
       .catch(done);
   });
 
-  describe('POST: /api/gallery/:galleryId/pic', function() {
-    describe('with a valid token and valid data', function() {
+  describe('POST: /api/gallery/:galleryId/pic', function () {
+    describe('with a valid token and valid data', function () {
       beforeEach(done => {
         new User(exampleUser)
           .generatePasswordHash(exampleUser.password)
@@ -70,7 +70,6 @@ describe('Pic Routes', function() {
         new Gallery(exampleGallery).save()
           .then(gallery => {
             this.tempGallery = gallery;
-            this.tempGallery.galleryId =gallery._id;
             done();
           })
           .catch(done);
@@ -81,7 +80,7 @@ describe('Pic Routes', function() {
         done();
       });
 
-      it('should return an object containing pic url', done => {
+      it('should return a object containing our pic url', done => {
         request.post(`${url}/api/gallery/${this.tempGallery._id}/pic`)
           .set({
             Authorization: `Bearer ${this.tempToken}`,
@@ -90,15 +89,14 @@ describe('Pic Routes', function() {
           .field('desc', examplePic.desc)
           .attach('image', examplePic.image)
           .end((err, res) => {
-            if(err) return done(err);
+            if (err) return done(err);
             expect(res.status).toEqual(200);
             expect(res.body.name).toEqual(examplePic.name);
             expect(res.body.desc).toEqual(examplePic.desc);
-            expect(res.bod.galleryId).toEqual(this.tempGallery._id.toString());
-
+            expect(res.body.galleryId).toEqual(this.tempGallery._id.toString());
             done();
           });
       });
     });
   });
-});
+}); 
